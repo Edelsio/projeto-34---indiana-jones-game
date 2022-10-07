@@ -11,7 +11,7 @@ var score = 0;
 
 var fundoImg, fundo;
 var barreira, barreiraImg;
-var indiana_jones, indianaImg, correndo;
+var indiana_jones, indianaImg, correndo, indianaParado;
 var gameOverImg, gameOver;
 var restartImg, restart;
 
@@ -27,6 +27,7 @@ fundoImg = loadImage("fundo jogo indiana.png");
 barreiraImg = loadImage("obstaculo_do_jogo.png");
 gameOverImg = loadImage("fim de jogo.png");
 restartImg = loadImage("reset.png");
+indianaParado = loadAnimation("I7.gif")
 
 groupBarreira = new Group();
 }
@@ -45,6 +46,7 @@ function setup() {
 
   indiana_jones = createSprite(400, 600, 100, 100);
   indiana_jones.addAnimation("correndo",indianaImg);
+  indiana_jones.addAnimation("parado",indianaParado);
   indiana_jones.scale = 0.5;
   indiana_jones.velocityX = 0;
   indiana_jones.setCollider('rectangle', 0, 0, 140 ,450);
@@ -85,8 +87,8 @@ function setup() {
 
 
 function draw() {
-  indiana_jones.debug=true
-  groupBarreira.debug=true
+  //indiana_jones.debug=true
+  //groupBarreira.debug=true
   //background(fundoImg);
   Engine.update(engine);
   drawSprites();
@@ -96,7 +98,7 @@ function draw() {
 
   if (Estado_de_jogo === PLAY){
     score = score + Math.round(getFrameRate() / 60);
-    groupBarreira.setVelocityXEach(6 + 4 * score / 100);
+    groupBarreira.setVelocityXEach((6 + 4 * score / 100)*-1);
     fundo.velocityX = -(6 + 3 * score / 100);
  
  if (keyDown("SPACE") && indiana_jones.y >= height -230) {
@@ -109,6 +111,8 @@ function draw() {
  if (indiana_jones.isTouching(groupBarreira)){
 
     Estado_de_jogo = END
+
+    indiana_jones.changeAnimation("parado")
  }
  
  if (fundo.x < 100) {
@@ -148,10 +152,10 @@ function draw() {
 function spawnBarreiras() {
 
   if (frameCount % 100 === 0){ 
-  var barreira = createSprite(1900,850,10,10);
+  var barreira = createSprite(1500,indiana_jones.y +60,10,10);
   barreira.addImage(barreiraImg);   
   barreira.scale = 1.5 ;
-  barreira.velocityX += 3;
+  barreira.velocityX = -3;
   barreira.lifetime = 600
   barreira.depth = indiana_jones.depth;
   indiana_jones.depth += 2;
@@ -171,6 +175,7 @@ gameOver.visible = false;
 restart.visible = false;
 
 groupBarreira.destroyEach();
+indiana_jones.changeAnimation("correndo")
 
 score = 0;
 }
